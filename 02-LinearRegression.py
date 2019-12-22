@@ -30,3 +30,21 @@ plt.scatter(x,Y,alpha=0.5)
 plt.plot([4,9],[B[0]+B[1]*4,B[0]+B[1]*9],c='red')
 plt.title('Linear Regression')
 plt.show()
+
+
+###
+
+# Implimentation with scklearn
+
+###
+
+from sklearn.linear_model import LinearRegression
+regressor=LinearRegression()
+regressor.fit(X,Y)
+b=regressor.intercept_
+m=regressor.coef_[1] 
+plt.scatter(x,Y,alpha=0.5)
+plt.plot([4,9],[b+m*4,b+m*9],c='black')
+plt.title('Regression with sklearn')
+plt.show()
+
