@@ -7,5 +7,5 @@ notebooks/SummaryWeather.csv
 notebooks/cars.csv
 notebooks/tree.dot
 notebooks/backpropa.png
-notebooks/.ipynb_checkpoints
+notebooks/.ipynb_checkpoints/
 notebooks/training_data.npy
