@@ -1,4 +1,5 @@
 Open Algorithms/SummaryWeather.csv
+Open Algorithms/.ipynb_checkpoints/
 
 Classic-Methods/tree.dot
 Classic-Methods/cars.csv
@@ -9,3 +10,6 @@ notebooks/tree.dot
 notebooks/backpropa.png
 notebooks/.ipynb_checkpoints/
 notebooks/training_data.npy
+notebooks/MNIST/
+
+.ipynb_checkpoints/
