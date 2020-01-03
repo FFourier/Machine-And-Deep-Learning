@@ -1,28 +1,43 @@
+#Description
+# The KMeans algorithm clusters data by trying to separate samples in n groups of equal variance, minimizing a criterion known as the 
+# inertia or within-cluster sum-of-squares (see below). This algorithm requires the number of clusters to be specified. 
+# It scales well to large number of samples and has been used across a large range of application areas in many different fields.
+
+#! Libraries
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn import metrics
 
+#! Preparing data
+
+#* Loading the dataset
 dataset=pd.read_csv('cars.csv',low_memory=False)
 # https://www.kaggle.com/abineshkumark/carsdata
 
+#* Selecting inputs columns
 x=dataset.iloc[:,0].values ##cylinders
 y=dataset.iloc[:,6].values #Year
 x=x.reshape(len(x),1)
 
+#* Mapping brand names into int values
 y_real=pd.factorize(dataset.iloc[:,7].values)
-    #Mapping brand names into int values
 
+#! Model 
+
+#* Selection of cluster number based on the elbow curve
 km=KMeans(n_clusters=3)
-    #Selection of cluster number base in the elbow curve
-y_predicted = km.fit_predict(x,y)
-    #Training the model
 
+#* Training the model   
+y_predicted = km.fit_predict(x,y)
+   
+#* Obtaining model accuracy, comparing the original values and predicted ones
 accuracy=metrics.adjusted_rand_score(dataset.iloc[:,7].values,y_predicted)
-    #Obtaining model accuracy, comparing the original values and predicted ones
 print(f'\nAccuracy: {accuracy} \nIterations: {km.n_iter_}\n')
 
+#! Visualization
 
 fig, axs = plt.subplots(1,3)
 fig.set_size_inches(18.5, 5)
