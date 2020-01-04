@@ -5,11 +5,15 @@ from tensorflow import keras
 import numpy as np
 import matplotlib.pyplot as plt
 
-fashion_mnist = keras.datasets.fashion_mnist
-# Dataset loading
-(train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
-# Dataset splitting
+#! Dataset 
 
+#* Dataset loading
+fashion_mnist = keras.datasets.fashion_mnist
+
+#* Dataset splitting
+(train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
+
+#* Labels names
 class_names = [
     "T-shirt/top",
     "Trouser",
@@ -22,14 +26,15 @@ class_names = [
     "Bag",
     "Ankle boot",
 ]
-# Labels names
 
-# Normalization
+
+#* Normalization
 train_images = train_images / 255.0
 test_images = test_images / 255.0
 
 font = {"family": "serif", "color": "darkred", "weight": "normal", "size": 8}
 
+#* Plotting the images and its labels
 plt.figure(figsize=(10, 10))
 for i in range(25):
     plt.subplot(5, 5, i + 1)
@@ -40,9 +45,10 @@ for i in range(25):
     plt.xlabel(class_names[train_labels[i]], fontdict=font)
 
 plt.show()
-# Plotting the images and its labels
 
-# Architecture of a 2 layer network
+#! Architecture of the neural network
+
+#* Architecture of a 2 layer network
 model = keras.Sequential(
     [
         keras.layers.Flatten(input_shape=(28, 28)),
@@ -51,18 +57,25 @@ model = keras.Sequential(
     ]
 )
 
+#! Training loop
+
 model.compile(
     optimizer=tf.compat.v1.train.AdamOptimizer(),
     loss="sparse_categorical_crossentropy",
     metrics=["accuracy"],
 )
 
+#* Training the model
 model.fit(train_images, train_labels, epochs=5)
 
+#* Evaluating the model
 test_loss, test_acc = model.evaluate(test_images, test_labels)
 print("Accuracy ", test_acc)
 
+#* Testing the network with test images
 predictions = model.predict(test_images)
+
+#! Visualization
 
 plt.figure(figsize=(10, 10))
 for i in range(25):

@@ -1,200 +1,129 @@
-from sklearn.datasets import load_iris
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.cluster import KMeans
-from sklearn import metrics
-from sklearn.tree import export_graphviz
-
-import pandas as pd
+#! Libraries
 
 import numpy as np
-
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-
-from subprocess import call
-
-from IPython.display import Image
-
-import pydot
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
-
 from tqdm import tqdm
-
 import statistics as st
 
+#! Data
+
+#* Samples number
+n = 100
+#* Labels
+h = n // 2
+dimen = 2
+
+#* Generating random data
+data = np.random.randn(n, dimen)
+
+#* Data plotting
+
+fig, axs = plt.subplots(1, 4, sharey=True, sharex=True, constrained_layout=True)
+fig.suptitle("Preparing the data", fontsize=20)
+fig.set_size_inches(16, 4)
+
+axs[0].scatter(data[:, 0], data[:, 1], c="yellow", s=55, alpha=0.5)
+axs[0].set_title("Random data")
+
+data = data * 3
+
+axs[1].scatter(data[:, 0], data[:, 1], c="green", s=55, alpha=0.5)
+axs[1].set_title("Spreading data")
+
+data[:h, :] = data[:h, :] - 3 * np.ones((h, dimen))
+data[h:, :] = data[h:, :] + 3 * np.ones((h, dimen))
+
+axs[2].scatter(data[:, 0], data[:, 1], c="red", s=55, alpha=0.5)
+axs[2].set_title("Separating Data")
+
+colors = ["blue", "red"]
+color = np.array([colors[0]] * h + [colors[1]] * h).reshape(n)
+
+axs[3].scatter(data[:, 0], data[:, 1], c=color, s=55, alpha=0.5)
+axs[3].set_title("Prepared data")
+
+plt.show()
+
+#* Splitting the data in inputs (x) and outputs (y)
+target = np.array([0] * h + [1] * h).reshape(n, 1)
+x = torch.from_numpy(data).float().requires_grad_(True)
+y = torch.from_numpy(target).float()
+
+#! Model
+
+#* Building the model
+model = nn.Sequential(nn.Linear(2, 1), nn.Sigmoid())
+
+#* Loss function and optimizer method
+loss_function = nn.BCELoss()
+optimizer = optim.Adam(model.parameters(), lr=0.025)
 
 
-# Preparing data
-iris =load_iris()
-df = pd.DataFrame(iris.data, columns=iris.feature_names)
-df['species']=pd.Categorical.from_codes(iris.target,iris.target_names)
-df=df[df.species != 'virginica']
-df=df.drop('sepal width (cm)', axis=1)
-df=df.drop('petal width (cm)', axis=1)
-df = df.sample(frac=1).reset_index(drop=True)
-x, y=df.iloc[:,0].values, df.iloc[:,1].values
-x,y=x.reshape(len(x),1), y.reshape(len(y),1)
-data=np.zeros([len(x),2])
-data[:len(x),0]=x[:,0]
-data[:len(x),1]=y[:,0]
+#! Training loop
 
-
-
-
-#k-means
-
-kmeans = [KMeans(n_clusters=i) for i in range(1, 5)]
-score = [kmeans[i].fit(data).score(data) for i in range(len(kmeans))]
-
-km=KMeans(n_clusters=2)
-output_km = km.fit_predict(data)
-
-compare=df.copy()
-
-output_km_label=['setosa' if output_km[i] == 0 else 'versicolor' for i in range(len(output_km))]
-
-if not df.species[0] == output_km_label[0]:
-    output_km_label=['versicolor' if output_km[i] == 0 else 'setosa' for i in range(len(output_km))]
-
-compare['Cluster']=output_km_label
-
-accuracy=metrics.adjusted_rand_score(compare.iloc[:,2].values,output_km)
-
-compare.head(10)
-
-
-
-
-
-#Random Forest
-
-compare['is_train']=np.random.uniform(0,1,len(compare))<=.75
-
-train,test = compare[compare['is_train']==True],compare[compare['is_train']==False]
-
-compare = compare.drop('is_train', 1)
-
-clf=RandomForestClassifier(n_estimators=100,n_jobs=2,random_state=0)
-
-features = compare.columns[:2]
-
-clf.fit(train[features],pd.factorize(train['species'])[0])
-
-output_RF_t=iris.target_names[clf.predict(test[features])]
-
-pd.crosstab(test['species'],output_RF_t,rownames=['Actual Species'],colnames=['Predicted Species'])
-
-
-compare['RandForest']=iris.target_names[clf.predict(compare[features])]
-
-estimator = clf.estimators_[5]
-
-
-# Export as dot file
-export_graphviz(estimator, out_file='tree.dot', 
-                feature_names = [iris.feature_names[0],iris.feature_names[2]],
-                class_names = iris.target_names[:2],
-                rounded = True, proportion = False, 
-                precision = 2, filled = True)
-
-(graph,) = pydot.graph_from_dot_file('tree.dot')
-graph.write_png('tree.png')
-
-# Display in jupyter notebook
-img = mpimg.imread('tree.png')
-
-output_RF=(pd.factorize(compare['RandForest']))[0]
-
-
-
-
-
-#Logistic Regression
-
-
-n=len(data)
-h=n//2
-dimen=2
-
-x=torch.from_numpy(data).float().requires_grad_(True)
-y=(torch.from_numpy((pd.factorize(df['species']))[0]).view(len(data),1)).float()
-
-model= nn.Sequential(nn.Linear(2,1), nn.Sigmoid())
-loss_function= nn.BCELoss()
-optimizer=optim.Adam(model.parameters(),lr=0.025)
-
-losses=[]
-iterations=400
+losses = []
+iterations = 100
 
 for i in tqdm(range(iterations)):
-    
-    result=model(x)
-    loss=loss_function(result,y)
- 
+
+    result = model(x)
+    loss = loss_function(result, y)
+
     losses.append(loss.data)
 
     optimizer.zero_grad()
-        
+
     loss.backward()
-        
+
     optimizer.step()
 
 
-prediction=model(x)
-prediction=['purple' if prediction[i] < 0.5 else 'yellow' for i in range(len(prediction))]
+#* Passing data through the model
+prediction = model(x)
 
+#* List with the corresponding labels
+prediction = ["blue" if prediction[i] < 0.5 else "red" for i in range(len(prediction))]
+
+#* weights
 w = list(model.parameters())
 
 w0 = w[0].data.numpy()
 
-x_axis = np.linspace(np.min(data[:,0]), np.max(data[:,0]), len(x))
-y_axis = -(w[1].data.numpy() + x_axis*w0[0][0]) / w0[0][1]
-    
-    
-font = {'family': 'serif',
-        'color':  'darkred',
-        'weight': 'normal',
-        'size': 8,
-        }
+
+#! Visualization
+
+#* Parameters to plot the line
+x_axis = np.linspace(torch.min(x).data, torch.max(x).data, len(x))
+y_axis = -(w[1].data.numpy() + x_axis * w0[0][0]) / w0[0][1]
 
 
-#Plotting
-fig, axs = plt.subplots(2,4, constrained_layout=True)
-fig.suptitle('Comparing classification methods', fontsize=30)
-fig.set_size_inches(16, 8)
+#* Output plotting
 
-axs[0][0].scatter(data[:,0],data[:,1],c='green',alpha=0.6,s=65)
-axs[0][0].set_title('Dataset')
+fig, axs = plt.subplots(1, 3, constrained_layout=True)
+fig.suptitle("Train and test", fontsize=20)
+fig.set_size_inches(16, 4)
 
-axs[0][1].scatter(data[:,0],data[:,1],alpha=0.6,s=65,c=pd.factorize(df['species'])[0])
-axs[0][1].set_title('Dataset wiht outputs')
+axs[0].plot(range(iterations), losses)
+axs[0].set_title("Loss")
 
+axs[1].plot(x_axis, y_axis, "g--")
+axs[1].scatter(data[:, 0], data[:, 1], c=color, s=55, alpha=0.5)
+axs[1].set_title("Output with error")
 
-axs[0][2].plot(range(1, 5),score)
-axs[0][2].set_xlabel('Number of Clusters')
-axs[0][2].set_ylabel('Score')
-axs[0][2].set_title('Elbow Curve')
-
-axs[0][3].scatter(data[:,0],data[:,1],c=output_km,alpha=0.6,s=65)
-axs[0][3].scatter([km.cluster_centers_[0][0],km.cluster_centers_[1][0]],[km.cluster_centers_[0][1],km.cluster_centers_[1][1]],marker="X",s=150,c='red')
-axs[0][3].set_title('K means')
-
-axs[1][0].imshow(img)
-axs[1][0].set_title('Random Forest')
-axs[1][0].axis('off')
-
-axs[1][1].scatter(data[:,0],data[:,1],c=output_RF,alpha=0.6,s=65)
-axs[1][1].set_title('Random Forest Classifier')
-
-axs[1][2].plot(range(iterations),losses)
-axs[1][2].set_title('Loss')
-
-axs[1][3].plot(x_axis, y_axis,'g--')    
+axs[2].plot(x_axis, y_axis, "g--")
 for i in range(len(x)):
-    axs[1][3].scatter(x[i,0].data, x[i,1].data,s=55,alpha=0.7,c=prediction[i])
-axs[1][3].set_title('Logistic Regression')
+    axs[2].scatter(x[i, 0].data, x[i, 1].data, s=55, alpha=0.5, c=prediction[i])
+axs[2].set_title("Output")
 
 plt.show()
+
+pred = model(x)
+pred = [0 if pred[i] < 0.5 else 1 for i in range(len(pred))]
+# Comparing each value with its reference and calculating the mean
+pred = st.mean([1 if pred[i] == int(y[i]) else 0 for i in range(len(pred))])
+print(f"Loss: {float(loss)}")
+print(f"Accuracy: {pred}")
+
