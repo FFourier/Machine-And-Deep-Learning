@@ -4,13 +4,9 @@ Open Algorithms/.ipynb_checkpoints/
 Classic-Methods/tree.dot
 Classic-Methods/cars.csv
 Classic-Methods/MNIST/
+Classic-Methods/.vscode/
 
-notebooks/SummaryWeather.csv
-notebooks/cars.csv
-notebooks/tree.dot
-notebooks/backpropa.png
-notebooks/.ipynb_checkpoints/
-notebooks/training_data.npy
-notebooks/MNIST/
+Notes/MNIST/
+Notes/.ipynb_checkpoints/
 
 .ipynb_checkpoints/
