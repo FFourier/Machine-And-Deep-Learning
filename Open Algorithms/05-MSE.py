@@ -48,3 +48,5 @@ plt.title('Loss vs weight')
 plt.ylabel('Loss')
 plt.xlabel('w')
 plt.show()
+
+print(f'\nW that minimize the loss: {np.argmin(mse_list)/10}')
