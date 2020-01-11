@@ -8,10 +8,21 @@ Classic-Methods/.vscode/
 Classic-Methods/tree.png
 Classic-Methods/try.png
 
-Notes/MNIST/
-Notes/.ipynb_checkpoints/
-Notes/try.png
+Convolutionals/.ipynb_checkpoints/
+Convolutionals/desktop.ini
 
-.ipynb_checkpoints/
+Convolutionals/CIFAR1/NNCIFR10.pt
+Convolutionals/CIFAR1/data/
+Convolutionals/CIFAR1/imgs/
 
-notebooks/
+Convolutionals/CatsVDogs/.ipynb_checkpoints/
+Convolutionals/CatsVDogs/NNCVD.pt
+Convolutionals/CatsVDogs/imgs/
+Convolutionals/CatsVDogs/training_data.npy
+
+Convolutionals/Fashion/data/
+
+Convolutionals/Nmnist/MNIST/
+Convolutionals/Nmnist/NNMnist.pt
+Convolutionals/Nmnist/try.png
+
