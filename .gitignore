@@ -16,9 +16,9 @@ Convolutionals/CIFAR1/data/
 Convolutionals/CIFAR1/imgs/
 
 Convolutionals/CatsVDogs/.ipynb_checkpoints/
-Convolutionals/CatsVDogs/NNCVD.pt
 Convolutionals/CatsVDogs/imgs/
 Convolutionals/CatsVDogs/training_data.npy
+Convolutionals/CatsVDogs/NNCatsVDogs.pt
 
 Convolutionals/Fashion/data/
 
