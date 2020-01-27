@@ -70,6 +70,8 @@ if (len(saves))>0:
         print(f'Index {index} is out of range, select index from 0 to {len(saves)-1} ')
 
 if loaded:
+
+    #? In your actual directory, create a folder named imgs where you can store your images
     path = os.getcwd() + '\\imgs'
     files = [f for f in os.listdir(path)]
     
